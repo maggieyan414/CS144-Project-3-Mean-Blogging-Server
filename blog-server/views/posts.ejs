@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= user %>'s Blog Posts</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%- user %>'s Posts</h1>
+    <br>
+    <% for(let i = 0; i < 5 && i < posts.length; i++) { %>
+        <% let curr = posts[i] %>
+        <p><%- curr.title %></p>
+        <p><%- curr.body %></p>
+        <p>Date created: <%- curr.created %></p>
+        <p>Last modified: <%- curr.modified %></p>
+        <hr>
+    <% } %>
+    <br>
+    <% if(posts.length > 5) { %>
+        <% let url = "http://localhost:3000/blog/" + user + "?start=" + nextstartid %>
+        <a id="next_link" href=<%- url %>>More Posts &gt;</a>
+    <% } %>
+  </body>
+</html>
