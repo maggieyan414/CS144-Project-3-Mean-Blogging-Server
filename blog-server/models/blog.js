@@ -48,7 +48,7 @@ async function getPost(req, res) {
                 stack: 'Cannot find post with specified username and postid'
             }
         }
-        res.render('error', err);
+        res.status(404).render('error', err);
     } else {
         let parser = new commonmark.Parser();
         let writer = new commonmark.HtmlRenderer();
