@@ -35,9 +35,10 @@ function getPosts(req, res, next) {
 }
 
 async function getPost(req, res) {
-    let posts = client.db('BlogServer').collection('Posts');
     let username = req.params.username;
     let postid = parseInt(req.params.postid);
+    
+    let posts = client.db('BlogServer').collection('Posts');
     let post = await posts.findOne({ 'username':username, 'postid':postid });
     if(!post) {
         let err = {
