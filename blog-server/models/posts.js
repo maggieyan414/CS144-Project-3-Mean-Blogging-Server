@@ -123,7 +123,7 @@ async function createPost(req, res) {
     let body = req.body.body;
 
     // check request
-    if(!postid || !title || !body) {
+    if(postid == null || !title || !body) {
         res.status(400).render('error', badReqErr);
         return;
     }
@@ -147,7 +147,7 @@ async function createPost(req, res) {
             };
             postsCollection.insertOne(newpost)
             .then(() => usersCollection.updateOne({ 'username': username }, { $inc: { 'maxid': 1 } }))
-            .then(() => res.sendStatus(201))
+            .then(() => res.status(201).json(newpost))
             .catch(err => res.render('error', err));
         }
     } else {
