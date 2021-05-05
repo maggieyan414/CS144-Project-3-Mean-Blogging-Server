@@ -33,12 +33,11 @@ let badReqErr = {
 
 function getCookiePayload(req, res, next) {
     // get jwt
-    let cookie = req.cookies;
-    if(!cookie) {
+    let token = req.cookies.jwt;
+    if(!token) {
         res.status(401).render('error', authErr);
         return;
     }
-    let token = cookie.jwt;
     let secret = 'C-UFRaksvPKhx1txJYFcut3QGxsafPmwCY6SCly3G6c';
     jwt.verify(token, secret, function(err, payload) {
         if(err) {
@@ -119,7 +118,7 @@ async function deletePost(req, res) {
 
 async function createPost(req, res) {
     let username = req.body.username;
-    let postid = parseInt(req.body.postid);
+    let postid = req.body.postid;
     let title = req.body.title;
     let body = req.body.body;
 
@@ -142,7 +141,7 @@ async function createPost(req, res) {
                 username: username,
                 title: title,
                 body: body,
-                postid: user.maxid,
+                postid: user.maxid+1,
                 created: time,
                 modified: time
             };
@@ -152,13 +151,20 @@ async function createPost(req, res) {
             .catch(err => res.render('error', err));
         }
     } else {
-        let updatedpost = await postsCollection.findOneAndUpdate({ 'username': username, 'postid':postid }, 
-            { $set: { 'title': title }, $set: { 'body': body }, $set: { 'modified': time } });
-        if(!updatedpost) {
-            res.status(404).render('error', notFoundErr);
-        } else {
-            res.status(200).json({modified: updatedpost});
-        }
+        let filter = { username: username, postid: parseInt(postid) };
+        let changes = { $set: { title: title, body: body, modified: time } };
+        console.log(changes);
+        console.log(title);
+        let options = { returnOriginal: false };
+        postsCollection.findOneAndUpdate(filter, changes, options)
+        .then(updatedpost => {
+            if(!updatedpost.value) {
+                res.status(404).render('error', notFoundErr);
+            } else {
+                res.status(200).json({modified: updatedpost.value})
+            }
+        })
+        .catch(err => res.render('error', err));
     }
 }
 
